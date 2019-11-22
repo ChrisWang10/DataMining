@@ -4,6 +4,7 @@ import math
 import os
 from numpy.linalg import inv
 from sklearn.metrics import accuracy_score
+from sklearn.metrics import confusion_matrix
 from sklearn.preprocessing import LabelBinarizer
 from sklearn.utils.multiclass import unique_labels
 
@@ -39,18 +40,21 @@ class Bayesian:
         """
         result = []
         for lable in self.unique_lables:
-            result.append(self.prior[lable] * (1 / np.sqrt(2 * math.pi) ** len(self.unique_lables)) * math.exp(
-                np.dot(np.dot(np.array(x - self.mean[lable]), inv(self.covariance_matrix[lable])),
-                       np.array(x - self.mean[lable]))
-            ))
+            result.append(self.prior[lable] * (1 / (np.sqrt(2 * math.pi) ** len(self.unique_lables) *
+                                               np.sqrt(np.linalg.norm(self.covariance_matrix[lable])))) *
+                          math.exp(-np.dot(np.dot(np.array(x - self.mean[lable]), inv(self.covariance_matrix[lable])),
+                                           np.array(x - self.mean[lable]))
+                                   ))
         return np.argmax(result)
 
     def evaluate(self):
         predict = []
-        target = self.test[1]
+        target = self.test[1].values
         for i in range(self.test[0].shape[0]):
             predict.append(self.predict(np.array(self.test[0].iloc[i, :])))
         accuracy = accuracy_score(target, predict)
+        cm = confusion_matrix(target, predict)
+        print(cm)
         print('accuracy is {}'.format(accuracy))
 
 

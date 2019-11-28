@@ -43,9 +43,11 @@ We can get {m:2, a:2, c:2, f:2} and {b:1, c:1} which is CPB(conditional pattern 
   * **build conditional FP tree base on PCB of m**
 
     * filter item that violates min_support requirement, we get {f:3, c:3, a:3}
-
-    * ![]( https://github.com/ChrisWang10/DataMining/raw/master/img/Frequent_Itemsets_FP_mining_cpb_tree.png )
-
+* ![]( https://github.com/ChrisWang10/DataMining/raw/master/img/Frequent_Itemsets_FP_mining_cpb_tree.png )
     * Recursively do the same process until there is one item left in the conditional tree
 
-      
+
+
+参考
+
+>  http://www.cis.hut.fi/Opinnot/T-61.6020/2008/fptree.pdf 

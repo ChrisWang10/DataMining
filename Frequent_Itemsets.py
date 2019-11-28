@@ -120,9 +120,40 @@ def update_head_point_table(begin_node, target_node):
     begin_node.next_similar = target_node
 
 
+def generate_rules(frequent_patterns, min_conf, rules):
+    for frequent_set in frequent_patterns:
+        if len(frequent_set) > 1:
+            get_rules(frequent_set, frequent_set, rules, frequent_patterns, min_conf)
+
+
+def get_rules(frequent_set, current_set, rules, frequent_patterns, min_conf):
+    for item in current_set:
+        subset = remove_str(current_set, item)
+        confidence = frequent_patterns[frequent_set] / frequent_patterns[subset]
+        if confidence > min_conf:
+            flag = False
+            for rule in rules:
+                if rule[0] == subset and rule[1] == frequent_set - subset:
+                    flag = True
+            if not flag:
+                rules.append((subset, frequent_set - subset, confidence))
+
+            if len(subset) >= 2:
+                get_rules(frequent_set, subset, rules, frequent_patterns, min_conf)
+
+
+def remove_str(set, str):
+    temp_set = []
+    for elem in set:
+        if elem != str:
+            temp_set.append(elem)
+    temp_frozenset = frozenset(temp_set)
+    return temp_frozenset
+
+
 def main():
     frozen_data = {frozenset(item): 1 for item in transactions}
-    min_support = 3
+    min_support, min_conf = 3, 0.6
     # 1 construct FP tree
     fp_tree, head_point_table = construct_fp_tree(frozen_data=frozen_data, min_support=3)
 
@@ -130,7 +161,11 @@ def main():
     prefix = set([])
     # 2 Mining FP tree
     fp_tree_mining(head_point_table, prefix, frequent_patterns, min_support)
-    print(frequent_patterns)
+
+    # 3 ge association rules
+    rules = []
+    generate_rules(frequent_patterns, min_conf, rules)
+    print(rules)
 
 
 if __name__ == '__main__':

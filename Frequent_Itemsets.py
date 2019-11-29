@@ -75,7 +75,8 @@ def update_fp_tree(fp_tree, ordered_frequent_items, head_point_table, count):
 
 
 def fp_tree_mining(head_point_table, prefix, frequent_patterns, min_support):
-    # for each item in head table, find conditional prefix path and create conditional fp-tree
+    # for each item in head table, find conditional pattern base and create conditional fp-tree
+    # increasing order of head_point_table
     head_point_items = [v[0] for v in sorted(head_point_table.items(), key=lambda v: v[1][0])]
 
     for item in head_point_items:
@@ -83,6 +84,7 @@ def fp_tree_mining(head_point_table, prefix, frequent_patterns, min_support):
         new_prefix.add(item)
         support = head_point_table[item][0]
         frequent_patterns[frozenset(new_prefix)] = support
+        # use every node in head_point_table to find its conditional pattern base.
 
         prefix_path = get_prefix_path(head_point_table, item)
         if prefix_path != {}:

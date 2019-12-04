@@ -110,6 +110,30 @@ For I1 => {I2:4}
 
 
 
+## Maximal Frequent Item-sets
+
+An item is maximal frequent item-set if none of its **immediate supersets** is frequent
+
+## Negative Border
+
+Item-sets are not frequent but all their immediate frequent sets are frequent
+
+
+
+**Border**
+
+ Positive Border + Negative Border 
+
+ Either the positive, or the negative border is sufficient to summarize all frequent item-sets. 
+
+
+
+##  Closed Itemset 
+
+ An itemset is closed if none of its immediate supersets has the same support as the itemset 
+
+![]( https://github.com/ChrisWang10/DataMining/raw/master/img/Frequent_Itemsets_maximal.png )
+
 
 
 

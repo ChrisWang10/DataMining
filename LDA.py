@@ -4,6 +4,8 @@ import pandas as pd
 import numpy as np
 import os
 from sklearn.preprocessing import LabelBinarizer
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import confusion_matrix
 from sklearn.utils.multiclass import unique_labels
 
 train_data_path = './data/cancer-data-train.csv'
@@ -56,11 +58,14 @@ class LDA:
             projected_data = test.iloc[i, :].dot(self.projection)
             margin = []
             for specific_class in self.unique_classes:
-                projected_mean = np.mean(self.train[self.train['label'] == specific_class].iloc[:, :-1].dot(self.projection))
-                margin.append(abs(projected_data-projected_mean))
+                projected_mean = np.mean(
+                    self.train[self.train['label'] == specific_class].iloc[:, :-1].dot(self.projection))
+                margin.append(abs(projected_data - projected_mean))
             predict.append(margin.index(min(margin)))
-
-
+        accuracy = accuracy_score(test_label, predict)
+        cm = confusion_matrix(test_label, predict)
+        print('accuracy is %f' % accuracy)
+        print(cm)
 
 
 def preprocess_data():

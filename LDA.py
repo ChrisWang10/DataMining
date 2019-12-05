@@ -15,19 +15,37 @@ class LDA:
         self.train = train
         self.test = test
         self.unique_classes = list(set(train['label']))
-        self.lda_fit()
+        self.projection = self.lda_fit()
 
     def lda_fit(self):
         specific_subsets = []
         centered_subsets = []
-        u = []
+        u_s = []
+        S = []
         for specific_class in self.unique_classes:
+            # class specific subsets
             specific_subset = self.train[self.train['label'] == specific_class].iloc[:, :-1]
             specific_subsets.append(specific_subset)
-            u.append(np.mean(specific_subset, axis=0))
 
+            # class means
+            u = np.mean(specific_subset, axis=0)
+            u_s.append(u)
+            center = specific_subset - u.T
 
+            # center class matrix
+            centered_subsets.append(center)
 
+            # class scatter matrix, N*N N is # of features
+            scatter_matrix = (center.T).dot(center)
+
+            S.append(scatter_matrix)
+        between_class_scatter_matrix = np.dot(np.array(u_s[0] - u_s[1]).reshape(len((u_s[0] - u_s[1])), 1),
+                                              np.array(u_s[0] - u_s[1]).reshape(1, len((u_s[0] - u_s[1]))))
+        within_class_scatter_matrix = S[0] + S[1]
+        eigenvalue, eigenvector = np.linalg.eig(np.linalg.inv(np.array(within_class_scatter_matrix)) *
+                                                between_class_scatter_matrix
+                                                )
+        return eigenvector[list(eigenvalue).index(max(eigenvalue))]
 
 
 def preprocess_data():

@@ -16,6 +16,7 @@ class LDA:
         self.test = test
         self.unique_classes = list(set(train['label']))
         self.projection = self.lda_fit()
+        self.evaluate()
 
     def lda_fit(self):
         specific_subsets = []
@@ -46,6 +47,20 @@ class LDA:
                                                 between_class_scatter_matrix
                                                 )
         return eigenvector[list(eigenvalue).index(max(eigenvalue))]
+
+    def evaluate(self):
+        test = self.test.iloc[:, :-1]
+        test_label = self.test.iloc[:, -1]
+        predict = []
+        for i in range(test.shape[0]):
+            projected_data = test.iloc[i, :].dot(self.projection)
+            margin = []
+            for specific_class in self.unique_classes:
+                projected_mean = np.mean(self.train[self.train['label'] == specific_class].iloc[:, :-1].dot(self.projection))
+                margin.append(abs(projected_data-projected_mean))
+            predict.append(margin.index(min(margin)))
+
+
 
 
 def preprocess_data():

@@ -10,34 +10,27 @@ transactions = [
     [1, 2, 3]
 ]
 
-
-def generate_candidate_set(transactions):
-    c = []
-    for trade in transactions:
-        for item in trade:
-            if [item] not in c:
-                c.append([item])
-    return list(map(frozenset, c))
+def get_frequent_item_sets(frequent_item_sets):
+    # get candidates from previous FIS(frequent item sets)
 
 
-def get_frequent_item_sets(frozen_data, candidates, min_support):
-    frequent_item_sets = []
-    for item in candidates:
-        print(item)
-    return 1
 
 
-def generate_candidates_general(k, frequent_itemsets_previous_layer):
-    candidates = {}
-    for sets in frequent_itemsets_previous_layer.keys():
-        pass
 
 
 def main():
     min_support = 3
-    frozen_data = list(map(set, transactions))
-    c1 = generate_candidate_set(transactions)
-    l1 = get_frequent_item_sets(frozen_data, c1, min_support)
+    candidate = list(set(item for transaction in transactions for item in transaction))
+    frequent_itemsets = []
+    counter = {}
+    for v in candidate:
+        for transaction in transactions:
+            if v in transaction:
+                counter[v] = 1 if v not in counter.keys() else counter[v]+1
+        if counter[v] > min_support:
+            frequent_itemsets.append(v)
+
+
 
 
 if __name__ == '__main__':

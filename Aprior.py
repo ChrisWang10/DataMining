@@ -11,29 +11,42 @@ transactions = [
 ]
 
 
-def check_frequency(candidate_set, min_sup):
+def check_frequency(candidate_set):
     count = 0
     for transaction in transactions:
         if candidate_set.issubset(frozenset(transaction)):
             count += 1
-        if count >= min_sup:
-            return True
-    return False
+    return count
 
 
-def get_frequent_item_sets(frequent_item_sets):
+def get_frequent_item_sets(frequent_item_sets, min_sup, F):
     # get candidates from previous FIS(frequent item sets)
-    candidates = []
+    new_frequent_item_sets = []
     record = []
-    for i in range(len(frequent_item_sets)):
-        for j in range(i, len(frequent_item_sets)):
+    for i in range(len(frequent_item_sets) - 1):
+        for j in range(i + 1, len(frequent_item_sets)):
             union_sets = frequent_item_sets[i].union(frequent_item_sets[j])
+            # print(union_sets)
             if union_sets not in record:
                 record.append(union_sets)
             else:
                 continue
-            if len(union_sets) == len(frequent_item_sets) + 1:
-                candidates.append(union_sets)
+            if len(union_sets) == len(frequent_item_sets[0]) + 1:
+                # print(union_sets)
+                if check_frequency(union_sets) > min_sup:
+                    new_frequent_item_sets.append(union_sets)
+                    F.append(union_sets)
+    if len(new_frequent_item_sets):
+        get_frequent_item_sets(new_frequent_item_sets, min_sup, F)
+
+
+def generate_association(frequent_item_sets):
+    for fis in frequent_item_sets:
+        if len(fis) >= 2:
+            for i in range(1, len(fis)):
+                confidence = check_frequency(fis) / check_frequency(frozenset(list(fis)[i:]))
+                # if confidence > 0.4:
+                print('{}->{}, confidence {}'.format(list(fis)[:i], list(fis)[i:], confidence))
 
 
 def main():
@@ -47,6 +60,9 @@ def main():
                 counter[v] = 1 if v not in counter.keys() else counter[v] + 1
         if counter[v] > min_support:
             frequent_itemsets.append(frozenset([v]))
+    get_frequent_item_sets(frequent_itemsets, min_support, frequent_itemsets)
+
+    generate_association(frequent_itemsets)
 
 
 if __name__ == '__main__':
